@@ -3011,6 +3011,61 @@ fi
 AM_CONDITIONAL(BUILD_WITH_LIBOPING, test "x$with_liboping" = "xyes")
 # }}}
 
+
+# --with-libdhcpd {{{
+AC_ARG_WITH(libdhcpd, [AS_HELP_STRING([--with-libdhcpd@<:@=PREFIX@:>@], [Path to libdhcpd.])],
+[
+ if test "x$withval" = "xyes"
+ then
+	 with_libdhcpd="yes"
+ else if test "x$withval" = "xno"
+ then
+	 with_libdhcpd="no"
+ else
+	 with_libdhcpd="yes"
+	 LIBDHCPD_CPPFLAGS="$LIBDHCPD_CPPFLAGS -I$withval/include"
+	 LIBDHCPD_LDFLAGS="$LIBDHCPD_LDFLAGS -L$withval/lib"
+ fi; fi
+],
+[with_libdhcpd="yes"])
+
+SAVE_CPPFLAGS="$CPPFLAGS"
+SAVE_LDFLAGS="$LDFLAGS"
+
+CPPFLAGS="$CPPFLAGS $LIBDHCPD_CPPFLAGS"
+LDFLAGS="$LDFLAGS $LIBDHCPD_LDFLAGS"
+
+if test "x$with_libdhcpd" = "xyes"
+then
+	if test "x$LIBDHCPD_CPPFLAGS" != "x"
+	then
+		AC_MSG_NOTICE([libdhcpd CPPFLAGS: $LIBDHCPD_CPPFLAGS])
+	fi
+	AC_CHECK_HEADERS(dhcpd.h,
+	[with_libdhcpd="yes"],
+	[with_libdhcpd="no (dhcpd.h not found)"])
+fi
+if test "x$with_libdhcpd" = "xyes"
+then
+	if test "x$LIBDHCPD_LDFLAGS" != "x"
+	then
+		AC_MSG_NOTICE([libdhcpd LDFLAGS: $LIBDHCPD_LDFLAGS])
+	fi
+fi
+
+CPPFLAGS="$SAVE_CPPFLAGS"
+LDFLAGS="$SAVE_LDFLAGS"
+
+if test "x$with_libdhcpd" = "xyes"
+then
+	BUILD_WITH_LIBDHCPD_CPPFLAGS="$LIBDHCPD_CPPFLAGS"
+	BUILD_WITH_LIBDHCPD_LDFLAGS="$LIBDHCPD_LDFLAGS"
+	AC_SUBST(BUILD_WITH_LIBDHCPD_CPPFLAGS)
+	AC_SUBST(BUILD_WITH_LIBDHCPD_LDFLAGS)
+fi
+AM_CONDITIONAL(BUILD_WITH_LIBDHCPD, test "x$with_libdhcpd" = "xyes")
+# }}
+
 # --with-oracle {{{
 with_oracle_cppflags=""
 with_oracle_libs=""
@@ -5097,6 +5152,7 @@ AC_COLLECTD([getifaddrs],[enable],  [feature], [getifaddrs under Linux])
 dependency_warning="no"
 dependency_error="no"
 
+plugin_arpping="no"
 plugin_ascent="no"
 plugin_barometer="no"
 plugin_battery="no"
@@ -5113,6 +5169,7 @@ plugin_disk="no"
 plugin_drbd="no"
 plugin_entropy="no"
 plugin_ethstat="no"
+plugin_ethsys="no"
 plugin_fscache="no"
 plugin_interface="no"
 plugin_ipmi="no"
@@ -5145,6 +5202,7 @@ plugin_zookeeper="no"
 # Linux
 if test "x$ac_system" = "xLinux"
 then
+	plugin_arpping="yes"
 	plugin_battery="yes"
 	plugin_conntrack="yes"
 	plugin_contextswitch="yes"
@@ -5154,6 +5212,7 @@ then
 	plugin_disk="yes"
 	plugin_drbd="yes"
 	plugin_entropy="yes"
+	plugin_ethsys="yes"
 	plugin_fscache="yes"
 	plugin_interface="yes"
 	plugin_irq="yes"
@@ -5462,6 +5521,7 @@ AC_PLUGIN([apache],      [$with_libcurl],      [Apache httpd statistics])
 AC_PLUGIN([apcups],      [yes],                [Statistics of UPSes by APC])
 AC_PLUGIN([apple_sensors], [$with_libiokit],   [Apple's hardware sensors])
 AC_PLUGIN([aquaero],     [$with_libaquaero5],  [Aquaero's hardware sensors])
+AC_PLUGIN([arpping],      [$plugin_arpping],     [ARP ping requests])
 AC_PLUGIN([ascent],      [$plugin_ascent],     [AscentEmu player statistics])
 AC_PLUGIN([barometer],   [$plugin_barometer],  [Barometer sensor on I2C])
 AC_PLUGIN([battery],     [$plugin_battery],    [Battery statistics])
@@ -5483,6 +5543,7 @@ AC_PLUGIN([dns],         [$with_libpcap],      [DNS traffic analysis])
 AC_PLUGIN([email],       [yes],                [EMail statistics])
 AC_PLUGIN([entropy],     [$plugin_entropy],    [Entropy statistics])
 AC_PLUGIN([ethstat],     [$plugin_ethstat],    [Stats from NIC driver])
+AC_PLUGIN([ethsys],	 [$plugin_ethsys],     [Stats from sysfs])
 AC_PLUGIN([exec],        [yes],                [Execution of external programs])
 AC_PLUGIN([filecount],   [yes],                [Count files in directories])
 AC_PLUGIN([fscache],     [$plugin_fscache],    [fscache statistics])
@@ -5766,6 +5827,7 @@ cat <<EOF;
 
 Configuration:
   Libraries:
+    dhcpd . . . . . . . . $with_dhcpd
     intel mic . . . . . . $with_mic
     libaquaero5 . . . . . $with_libaquaero5
     libatasmart . . . . . $with_libatasmart
@@ -5853,6 +5915,7 @@ Configuration:
     email . . . . . . . . $enable_email
     entropy . . . . . . . $enable_entropy
     ethstat . . . . . . . $enable_ethstat
+    ethsys  . . . . . . . $enable_ethsys
     exec  . . . . . . . . $enable_exec
     filecount . . . . . . $enable_filecount
     fscache . . . . . . . $enable_fscache
