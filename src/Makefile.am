@@ -137,11 +137,9 @@ aquaero_la_LIBADD = $(BUILD_WITH_LIBAQUAERO5_LDFLAGS) -laquaero5
 endif
 
 if BUILD_PLUGIN_ARPPING
-#pkglib_LTLIBRARIES += arpping.la
-#arpping_la_SOURCES = arpping.c
-#arpping_la_CPPFLAGS = $(AM_CPPFLAGS) $(BUILD_WITH_LIBOPING_CPPFLAGS)
-#arpping_la_LDFLAGS = $(PLUGIN_LDFLAGS) $(BUILD_WITH_LIBOPING_LDFLAGS)
-#arpping_la_LIBADD = -loping -lm
+pkglib_LTLIBRARIES += arpping.la
+arpping_la_SOURCES = arpping.c
+arpping_la_LDFLAGS = $(PLUGIN_LDFLAGS)
 endif
 
 if BUILD_PLUGIN_ASCENT
