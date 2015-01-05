@@ -5166,6 +5166,7 @@ plugin_curl_json="no"
 plugin_curl_xml="no"
 plugin_df="no"
 plugin_disk="no"
+plugin_dnsrequest="no"
 plugin_drbd="no"
 plugin_entropy="no"
 plugin_ethstat="no"
@@ -5210,6 +5211,7 @@ then
 	plugin_cpu="yes"
 	plugin_cpufreq="yes"
 	plugin_disk="yes"
+	plugin_dnsrequest="yes"
 	plugin_drbd="yes"
 	plugin_entropy="yes"
 	plugin_ethsys="yes"
@@ -5540,6 +5542,7 @@ AC_PLUGIN([df],          [$plugin_df],         [Filesystem usage statistics])
 AC_PLUGIN([disk],        [$plugin_disk],       [Disk usage statistics])
 AC_PLUGIN([drbd],        [$plugin_drbd],       [DRBD statistics])
 AC_PLUGIN([dns],         [$with_libpcap],      [DNS traffic analysis])
+AC_PLUGIN([dnsrequest],  [$plugin_dnsrequest], [DNS requests rtt])
 AC_PLUGIN([email],       [yes],                [EMail statistics])
 AC_PLUGIN([entropy],     [$plugin_entropy],    [Entropy statistics])
 AC_PLUGIN([ethstat],     [$plugin_ethstat],    [Stats from NIC driver])
@@ -5911,6 +5914,7 @@ Configuration:
     df  . . . . . . . . . $enable_df
     disk  . . . . . . . . $enable_disk
     dns . . . . . . . . . $enable_dns
+    dnsrequest  . . . . . $enable_dnsrequest
     drbd  . . . . . . . . $enable_drbd
     email . . . . . . . . $enable_email
     entropy . . . . . . . $enable_entropy

@@ -322,6 +322,12 @@ dns_la_LDFLAGS = $(PLUGIN_LDFLAGS)
 dns_la_LIBADD = -lpcap -lpthread
 endif
 
+if BUILD_PLUGIN_DNSREQUEST
+pkglib_LTLIBRARIES += dnsrequest.la
+dnsrequest_la_SOURCES = dnsrequest.c
+dnsrequest_la_LDFLAGS = $(PLUGIN_LDFLAGS)
+endif
+
 if BUILD_PLUGIN_DRBD
 pkglib_LTLIBRARIES += drbd.la
 drbd_la_SOURCES = drbd.c
