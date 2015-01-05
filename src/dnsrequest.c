@@ -18,14 +18,15 @@ static const char *config_keys[] =
 {
         "Interface",
         "Server",
-        "Hostname"
+        "Hostname",
+	"Interval"
 };
 static int config_keys_num = STATIC_ARRAY_SIZE (config_keys);
 
 char* interface;
 char* server;
 char* hostname;
-//Types of DNS resource records :)
+int interval;
 
 #define T_A 1 //Ipv4 address
 #define T_NS 2 //Nameserver
@@ -34,7 +35,6 @@ char* hostname;
 #define T_PTR 12 /* domain name pointer */
 #define T_MX 15 //Mail server
 
-//DNS header structure
 struct DNS_HEADER
 {
 	unsigned short id; // identification number
@@ -57,14 +57,12 @@ struct DNS_HEADER
 	unsigned short add_count; // number of resource entries
 };
 
-//Constant sized fields of query structure
 struct QUESTION
 {
 	unsigned short qtype;
 	unsigned short qclass;
 };
 
-//Constant sized fields of the resource record structure
 #pragma pack(push, 1)
 struct R_DATA
 {
@@ -75,7 +73,6 @@ struct R_DATA
 };
 #pragma pack(pop)
 
-//Pointers to resource record contents
 struct RES_RECORD
 {
 	unsigned char *name;
@@ -83,7 +80,6 @@ struct RES_RECORD
 	unsigned char *rdata;
 };
 
-//Structure of a Query
 typedef struct
 {
 	unsigned char *name;
@@ -106,6 +102,15 @@ static int dns_request_config (const char *key, const char *value)
 	{
 		if (value != NULL)
 			strcpy(hostname, value);
+	}
+	else if (strcasecmp (key, "Interval") == 0)
+	{
+		double tmp;
+		tmp = atof (value);
+		if (tmp > 0.0)
+			interval = tmp;
+		else
+			WARNING ("dnsrequest plugin: Ignoring invalid interval %g (%s)", tmp, value);
 	}
 	else
 	{
